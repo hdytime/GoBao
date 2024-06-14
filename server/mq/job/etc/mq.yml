@@ -1,0 +1,26 @@
+Name: mq-job
+Host: 0.0.0.0
+Port: 3001
+Mode: dev
+
+Log:
+  ServiceName: mq-job
+  Level: error
+
+RedisConf:
+  Addr: 127.0.0.1:6379
+  DB: 4
+  PoolSize: 100
+
+UserRpcConf:
+  EndPoints:
+    - 127.0.0.1:2001
+  Nonblock: true
+
+ProductRpcConf:
+  EndPoints:
+    - 127.0.0.1:2002
+
+OrderRpcConf:
+  EndPoints:
+    - 127.0.0.1:2004

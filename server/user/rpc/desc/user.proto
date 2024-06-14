@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+package user;
+
+message GenerateTokenReq {
+  int64 UserID = 1;
+}
+
+message GenerateTokenResp {
+  string  AccessToken = 1;
+  int64   AccessExpire = 2;
+  int64   RefreshAfter = 3;
+}
+
+message RegisterReq {
+  string Username = 1;
+  string Password = 2;
+}
+
+message RegisterResp {
+  string AccessToken = 1;
+  int64 AccessExpire = 2;
+  int64 RefreshAfter = 3;
+}
+
+message LoginReq {
+  string Username = 1;
+  string Password = 2;
+}
+
+message LoginResp {
+  string AccessToken = 1;// 访问令牌
+  int64 AccessExpire = 2;// 过期时间
+  int64 RefreshAfter = 3;// 刷新令牌
+}
+
+message UserDetailReq{
+  int64 UserID = 1;
+}
+
+message UserDetailResp{
+  int64 ID = 1;
+  string Username = 2;
+  string Password = 3;
+  double Money = 4;
+  int64 Sex = 5;
+  int64 PhoneNumber = 6;
+  string Email = 7;
+  string Sign = 8;
+}
+
+message UpdateUserDetailReq{
+  int64 UserID = 1;
+  int64 Sex = 2;
+  string Email = 3;
+  string Sign = 4;
+}
+
+message UpdateUserDetailResp{}
+
+message UpdateUserMoneyReq{
+  int64 UserID = 1;
+  double Money = 2;
+}
+message UpdateUserMoneyResp{}
+service user{
+  rpc GenerateToken(GenerateTokenReq) returns (GenerateTokenResp);
+  rpc Register(RegisterReq) returns (RegisterResp);
+  rpc Login(LoginReq) returns (LoginResp);
+  rpc UserDetail(UserDetailReq) returns (UserDetailResp);
+  rpc UpdateUserDetail(UpdateUserDetailReq) returns (UpdateUserDetailResp);
+  rpc UpdateUserMoney(UpdateUserMoneyReq) returns(UpdateUserMoneyResp);
+}

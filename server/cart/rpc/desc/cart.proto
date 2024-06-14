@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+package cart;
+
+message CartProduct{
+  int64 Id = 1;
+  int64 UserId = 2;
+  int64 ProductId = 3;
+  double Price = 4;
+  double DiscountPrice = 5;
+  int64 Quantity = 6;
+  int64 CreateTime = 7;
+  int64 UpdateTime = 8;
+}
+
+service cart{
+  rpc AddProductToCart(AddProductToCartRequest) returns (AddProductToCartResponse);
+  rpc DeleteProductFromCart(DeleteProductFromCartRequest) returns (DeleteProductFromCartResponse);
+  rpc UpdateCartProductDetail(UpdateCartProductDetailRequest) returns (UpdateCartProductDetailResponse);
+  rpc GetCartList(GetCartListRequest) returns (GetCartListResponse);
+}
+
+
+message AddProductToCartRequest{
+  int64 ProductID = 1;
+  int64 Count = 2;
+  int64 UserID = 3;
+}
+message AddProductToCartResponse{}
+
+
+
+message DeleteProductFromCartRequest{
+  int64 CartID = 1;
+  int64 UserID = 2;
+}
+message DeleteProductFromCartResponse{}
+
+
+
+message UpdateCartProductDetailRequest{
+  int64 CartID = 1;
+  int64 Count = 2;
+  int64 UserID = 3;
+}
+message UpdateCartProductDetailResponse{}
+
+
+
+message GetCartListRequest{
+  int64 UserID = 1;
+}
+message GetCartListResponse{
+  repeated CartProduct CartProducts = 1;
+}

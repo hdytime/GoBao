@@ -1,0 +1,157 @@
+syntax = "v1"
+
+info (
+	title:   "type title here"
+	desc:    "type desc here"
+	author:  "type author here"
+	email:   "type email here"
+	version: "type version here"
+)
+
+type Product {
+	ID         int64   `json:"id"`
+	Name       string  `json:"name"`
+	Price      float64 `json:"price"`
+	Stock      int64   `json:"stock"`
+	Status     int64   `json:"status"`
+	CreateTime int64   `json:"createTime"`
+	UpdateTime int64   `json:"updateTime"`
+}
+
+type BasePage {
+	Page int64 `json:"page"`
+	Size int64 `json:"size"`
+}
+
+type SmallProduct {
+	ID            int64   `json:"id"`
+	Name          string  `json:"name"`
+	Price         float64 `json:"price"`
+	DiscountPrice float64 `json:"discountPrice"`
+}
+
+type (
+	RecommendProductResp {
+		Products []SmallProduct `json:"products"`
+	}
+)
+
+type (
+	SearchProductReq {
+		Keyword string `json:"keyword"`
+		Sort    string `json:"sort"`
+		OnSale  int64  `json:"onSale"`
+		BasePage
+	}
+	SearchProductResp {
+		Products []SmallProduct `json:"products"`
+	}
+)
+
+type (
+	ProductDetailReq {
+		ProductID int64 `json:"productId"`
+	}
+	ProductDetailResp {
+		Product Product `json:"product"`
+	}
+)
+
+//----------------------------------------------------------------------
+type SmallSeckill {
+	SeckillID    int64   `json:"seckillId"`
+	Name         string  `json:"name"`
+	SeckillPrice float64 `json:"seckillPrice"`
+}
+
+type SeckillProduct {
+	Product
+	SeckillPrice float64 `json:"seckillPrice"`
+	StockCount   int64   `json:"stockCount"`
+	StartTime    string  `json:"startTime"`
+	Time         int64   `json:"time"`
+}
+
+type (
+	GetSeckillListReq {
+		StartTime string `json:"startTime"`
+		Time      int64  `json:"time"`
+	}
+	GetSeckillListResp {
+		SeckillProducts []SmallSeckill `json:"seckillProducts"`
+	}
+)
+
+type (
+	GetSeckillDetailReq {
+		SeckillID int64 `json:"seckillId"`
+	}
+	GetSeckillDetailResp {
+		SeckillProduct
+	}
+)
+
+//----------------------------------------------------------------------
+type (
+	CreateProductReq {
+		Name   string  `json:"name"`
+		Price  float64 `json:"price"`
+		Stock  int64   `json:"stock"`
+		UserID int64   `json:"userId"`
+	}
+)
+
+type (
+	DeleteProductReq {
+		ProductIDs []int64 `json:"productIDs"`
+	}
+)
+
+//----------------------------------------------------------------------
+@server (
+	group:  commonProduct
+	prefix: product/v1
+)
+service product {
+	@doc "首页商品推荐列表"
+	@handler recommend
+	get /homepage/recommend returns (RecommendProductResp)
+
+	@doc "商品搜索"
+	@handler searchProduct
+	post /homepage/research (SearchProductReq) returns (SearchProductResp)
+
+	@doc "商品详情"
+	@handler productDetail
+	get /product/detail (ProductDetailReq) returns (ProductDetailResp)
+}
+
+@server (
+	group:  seckillProduct
+	prefix: product/v1
+)
+service product {
+	@doc "秒杀商品列表"
+	@handler seckillList
+	get /seckill/list (GetSeckillListReq) returns (GetSeckillListResp)
+
+	@doc "秒杀商品详情"
+	@handler seckillDetail
+	get /seckill/detail (GetSeckillDetailReq) returns (GetSeckillDetailResp)
+}
+
+@server (
+	group:  storeProduct
+	prefix: product/v1
+	jwt:    JwtAuth
+)
+service product {
+	@doc "上传商品(未上架)"
+	@handler createProduct
+	post /store/product (CreateProductReq)
+
+	@doc "删除商品"
+	@handler deleteProduct
+	delete /store/product (DeleteProductReq)
+}
+

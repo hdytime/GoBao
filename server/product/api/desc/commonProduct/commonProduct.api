@@ -1,0 +1,69 @@
+syntax = "v1"
+
+info(
+    title: "type title here"
+    desc: "type desc here"
+    author: "type author here"
+    email: "type email here"
+    version: "type version here"
+)
+
+type Product {
+    ID int64 `json:"id"`
+    Name string `json:"name"`
+    Price float64 `json:"price"`
+    Stock int64 `json:"stock"`
+    Status int64 `json:"status"`
+    CreateTime int64 `json:"createTime"`
+    UpdateTime int64 `json:"updateTime"`
+}
+
+type BasePage{
+    Page int64 `json:"page"`
+    Size int64 `json:"size"`
+}
+
+type Comment {
+    ID			int64 	`json:"id"`
+    UserID		int64 	`json:"userId"`
+    ProductID	int64 	`json:"productId"`
+    IsGood		int64 	`json:"isGood"`
+    Content		string	`json:"content"`
+    AddContent	string	`json:"addContent"`
+}
+
+type SmallProduct{
+    ID int64 `json:"id"`
+    Name string `json:"name"`
+    Price float64 `json:"price"`
+    DiscountPrice float64 `json:"discountPrice"`
+}
+
+type (
+    RecommendProductResp {
+        Products []SmallProduct `json:"products"`
+    }
+)
+
+type (
+    SearchProductReq{
+        Keyword string `json:"keyword"`
+        Sort string `json:"sort"`
+        OnSale int64 `json:"onSale"`
+        BasePage
+    }
+    SearchProductResp{
+        Products []SmallProduct `json:"products"`
+    }
+)
+
+type (
+    ProductDetailReq{
+        ProductID int64 `json:"productId"`
+        BasePage
+    }
+    ProductDetailResp{
+        Product Product `json:"product"`
+        Comments []Comment `json:"comments"`
+    }
+)

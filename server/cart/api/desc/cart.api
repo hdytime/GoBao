@@ -1,0 +1,70 @@
+syntax = "v1"
+
+info (
+	title:   "type title here"
+	desc:    "type desc here"
+	author:  "type author here"
+	email:   "type email here"
+	version: "type version here"
+)
+
+type CartProduct {
+	Id            int64   `json:"id"`
+	UserId        int64   `json:"userId"`
+	ProductId     int64   `json:"productId"`
+	Price         float64 `json:"price"`
+	DiscountPrice float64 `json:"discountPrice"`
+	Quantity      int64   `json:"quantity"`
+	CreateTime    int64   `json:"createTime"`
+	UpdateTime    int64   `json:"updateTime"`
+}
+
+type (
+	AddProductToCartReq {
+		ProductID int64 `json:"productId"`
+		Count     int64 `json:"count"`
+	}
+)
+
+type (
+	DeleteProductFromCartReq {
+		CartID int64 `json:"productId"`
+	}
+)
+
+type (
+	UpdateCartProductDetailReq {
+		CartID int64 `json:"cartId"`
+		Count  int64 `json:"count"`
+	}
+)
+
+type (
+	getCartListResp {
+		CartProducts []CartProduct `json:"cartProducts"`
+	}
+)
+
+@server (
+	group:  cart
+	prefix: cart/v1
+	jwt:    JwtAuth
+)
+service cart {
+	@doc "添加商品到购物车"
+	@handler addProductToCart
+	post /cart (AddProductToCartReq)
+
+	@doc "删除购物车里的商品"
+	@handler deleteProductFromCart
+	delete /cart (DeleteProductFromCartReq)
+
+	@doc "修改购物车信息"
+	@handler updateCartProductDetail
+	put /cart (UpdateCartProductDetailReq)
+
+	@doc "查看购物车详情"
+	@handler getCartList
+	get /cart returns (getCartListResp)
+}
+

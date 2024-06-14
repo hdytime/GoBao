@@ -1,0 +1,20 @@
+Name: product.rpc
+ListenOn: 0.0.0.0:2002
+# log配置
+Log:
+  ServiceName: product-rpc
+  Level: error
+
+# Mysql配置
+MysqlConf:
+  DSN: root:123456@tcp(127.0.0.1:3306)/gobao_product?charset=utf8mb4&parseTime=True&loc=Local
+
+# Redis配置
+RedisConf:
+  Addr: localhost:6379
+  DB: 1
+  PoolSize: 100
+
+ProductRpc:
+  EndPoints:
+    - 127.0.0.1:2002

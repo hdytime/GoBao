@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package order;
+option go_package = "./pb";
+
+
+service Order{
+  rpc CreateSeckillOrder(CreateSeckillOrderReq) returns (CreateSeckillOrderResp){}
+  rpc GetOrderList(GetOrderListReq) returns (GetOrderListResp){}
+  rpc GetOrderDetail(GetOrderDetailReq) returns (GetOrderDetailResp){}
+  rpc DeleteOrder(DeleteOrderReq) returns (DeleteOrderResp){}
+  rpc UpdateOrderStatus(UpdateOrderStatusReq) returns (UpdateOrderStatusResp){}
+}
+
+message SmallOrder{
+  string OrderSn = 1;
+  string Name = 2;
+  int64 ProductID = 3;
+  double TotalPrice = 4;
+  string Status = 5;
+}
+message CreateSeckillOrderReq{
+  int64 UserID = 1;
+  int64 ProductID = 2;
+  int64 ProductCount = 3;
+  string Remark = 4;
+}
+message CreateSeckillOrderResp{
+  string OrderSn = 1;
+}
+
+message GetOrderListReq{
+  int64 UserID = 1;
+  int64 Page = 2;
+  int64 Size = 3;
+  int64 Status = 4;
+}
+message GetOrderListResp{
+  repeated SmallOrder OrderList = 1;
+}
+
+message GetOrderDetailReq{
+  int64 UserID = 1;
+  string OrderSn = 2;
+}
+
+message GetOrderDetailResp{
+  int64 ID = 1;
+  int64 UserID = 2;
+  int64 ProductID = 3;
+  string OrderSn = 4;
+  string ProductName = 5;
+  double UnitPrice = 6;
+  int64 Quantity = 7;
+  double TotalPrice = 8;
+  int64 Status = 9;
+  int64 Paytime = 10;
+  int64 Createtime = 11;
+  int64 Updatetime = 12;
+  string Remark =13;
+}
+
+message DeleteOrderReq{
+  int64 UserID = 1;
+  string OrderSn = 2;
+}
+message DeleteOrderResp{}
+
+message UpdateOrderStatusReq{
+  int64 UserID = 1;
+  string OrderSn = 2;
+  int64 Status = 3;
+}
+message UpdateOrderStatusResp{}
+

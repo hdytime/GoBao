@@ -1,0 +1,18 @@
+Log:
+  ServiceName: pay-mq
+  Level: error
+
+kafka:
+  Name: pay_msg
+  Brokers:
+    - 127.0.0.1:9092
+  Topic: pay-topic
+  Group: pay-group
+
+OrderRpc:
+  EndPoints:
+    - 127.0.0.1:2004
+
+ProductRpc:
+  Endpoints:
+    - 127.0.0.1:2002

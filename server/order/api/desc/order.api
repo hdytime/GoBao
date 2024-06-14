@@ -1,0 +1,105 @@
+syntax = "v1"
+
+info(
+    title: "type title here"
+    desc: "type desc here"
+    author: "type author here"
+    email: "type email here"
+    version: "type version here"
+)
+
+type Order {
+    Id int64 `json:"id"`
+    UserId int64 `json:"userId"`
+    ProductId int64 `json:"productId"`
+    ProductName string `json:"productName"`
+    OrderSn string `json:"orderSn"`
+    UnitPrice float64 `json:"unitPrice"`
+    Quantity int64 `json:"quantity"`
+    TotalPrice float64 `json:"totalPrice"`
+    Status int64 `json:"status"`
+    PayTime int64 `json:"payTime"`
+    CreateTime int64 `json:"createTime"`
+    UpdateTime int64 `json:"updateTime"`
+    Remark string `json:"remark"`
+}
+
+type (
+    CreateSeckillOrderReq {
+        ProductID int64 `json:"productId"`
+        ProductCount int64 `json:"productCount"`
+        Remark string `json:"remark"`
+    }
+    CreateSeckillOrderResp {
+        OrderSn string `json:"orderSn"`
+    }
+)
+
+type (
+    SmallOrder {
+        OrderSn string `json:"orderSn"`
+        Name string `json:"name"`
+        ProductID int64 `json:"productId"`
+        TotalPrice float64 `json:"totalPrice"`
+        Status string `json:"status"`
+    }
+    GetOrderListReq {
+        Page int64 `json:"page"`
+        Size int64 `json:"size"`
+    }
+    GetOrderListResp {
+        OrderList []SmallOrder `json:"orderList"`
+    }
+)
+
+type (
+    GetOrderDetailReq {
+        UserID int64 `json:"userId"`
+        OrderSn string `json:"orderSn"`
+    }
+    GetOrderDetailResp {
+        ID int64 `json:"id"`
+        CreateTime string `json:"createTime"`
+        UpdateTime string `json:"updateTime"`
+        OrderSn string `json:"orderSn"`
+        UserID int64 `json:"userId"`
+        ProductID int64 `json:"productId"`
+        Name string `json:"name"`
+        ProductCount int64 `json:"productCount"`
+        UnitPrice float64 `json:"unitPrice"`
+        TotalPrice float64 `json:"totalPrice"`
+        Status int64 `json:"status"`
+        Remark string `json:"remark"`
+        PayTime string `json:"payTime"`
+    }
+)
+
+type (
+    DeleteOrderReq {
+        OrderSn string `json:"orderSn"`
+    }
+)
+
+@server(
+    group: order
+    prefix: order/v1
+    jwt: JwtAuth
+)
+service order {
+    @doc "创建秒杀商品订单"
+    @handler createSeckillOrder
+    post /order/seckill (CreateSeckillOrderReq) returns (CreateSeckillOrderResp)
+
+    @doc "订单列表"
+    @handler orderList
+    get /order/list (GetOrderListReq) returns (GetOrderListResp)
+
+    @doc "订单详情"
+    @handler orderDetail
+    get /order/detail (GetOrderDetailReq) returns (GetOrderDetailResp)
+
+    @doc "删除订单信息"
+    @handler deleteOrder
+    delete /order (DeleteOrderReq)
+}
+

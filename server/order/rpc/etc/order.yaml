@@ -1,0 +1,32 @@
+Name: order.rpc
+ListenOn: 0.0.0.0:2004
+
+Log:
+  ServiceName: order-rpc
+  Level: error
+
+MysqlConf:
+  DSN: root:123456@tcp(127.0.0.1:3306)/gobao_order?charset=utf8mb4&parseTime=True&loc=Local
+
+RedisConf:
+  Addr: localhost:6379
+  DB: 1
+  PoolSize: 100
+
+KqPusherConf:
+  Brokers:
+    - 127.0.0.1:9092
+  Topic:
+    order-topic
+
+PayRpc:
+  EndPoints:
+    - 127.0.0.1:2005
+
+UserRpc:
+  EndPoints:
+    - 127.0.0.1:2001
+
+ProductRpc:
+  EndPoints:
+    - 127.0.0.1:2002

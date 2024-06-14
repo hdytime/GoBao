@@ -1,0 +1,81 @@
+syntax = "v1"
+
+type User {
+    Username string `json:"username"`
+    Password string `json:"password"`
+    Money float64 `json:"money"`
+    Sex int64 `json:"sex"`
+    PhoneNumber int64 `json:"phoneNumber"`
+    Email string `json:"email"`
+    Sign string `json:"sign"`
+}
+
+type JwtAccess {
+    AccessToken string `json:"accessToken"`
+    AccessExpire int64 `json:"accessExpire"`
+    RefreshAfter int64 `json:"refreshAfter"`
+}
+
+type (
+    RegisterReq {
+        username string `json:"username"`
+        password string `json:"password"`
+    }
+    RegisterResp {
+        JwtAccess JwtAccess `json:"jwtAccess"`
+    }
+)
+
+type (
+    LoginReq {
+        username string `json:"username"`
+        password string `json:"password"`
+    }
+    LoginResp {
+        JwtAccess JwtAccess `json:"jwtAccess"`
+    }
+)
+
+type (
+    DetailResp {
+        UserInfo User `json:"userInfo"`
+    }
+)
+
+type (
+    UpdateUserInfoReq {
+        Sex int64 `json:"sex"`
+        Email string `json:"email"`
+        Sign string `json:"sign"`
+    }
+)
+
+//不用登录
+@server(
+    prefix: user/v1
+)
+service user {
+    @doc "register"
+    @handler register
+    post /register (RegisterReq) returns (RegisterResp)
+
+    @doc "login"
+    @handler login
+    post /login (LoginReq) returns (LoginResp)
+}
+
+//需要登录
+@server(
+    prefix: user/v1
+    jwt: JWTAuth
+)
+service user {
+    @doc "detail"
+    @handler detail
+    get /detail returns (DetailResp)
+
+    @doc "updateUserDetail"
+    @handler updateUserDetail
+    post /detail (UpdateUserInfoReq)
+}
+

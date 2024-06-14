@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package pay;
+option go_package = "./pb";
+service pay{
+  rpc orderPayment(OrderPaymentReq) returns (OrderPaymentResp);
+  rpc getPaymentDetail(GetPaymentDetailReq) returns (GetPaymentDetailResp);
+}
+
+message OrderPaymentReq {
+  int64   UserID = 1;
+  string  OrderSn = 2;
+}
+message OrderPaymentResp {
+  double   PayTotalPrice = 1;
+  string  PaySn = 2;
+}
+
+message GetPaymentDetailReq {
+  string  OrderSn = 1;
+}
+message GetPaymentDetailResp {
+  int64   ID = 1;
+  string  PaySn = 2;
+  string  OrderSn = 3;
+  int64   UserID = 4;
+  string  TradeState = 5;
+  double   PayTotal = 6;
+  string  TransactionID = 7;
+  string  TradeStateDesc = 8;
+  int64   PayStatus = 9;
+  string  PayTime = 10;
+}

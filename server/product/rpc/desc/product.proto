@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+package product;
+
+service Product_rpc {
+  //commonProduct
+  rpc recommend(RecommendReq) returns(RecommendResp);
+  rpc searchProduct(SearchProductReq) returns(SearchProductResp);
+  rpc ProductDetail(ProductDetailReq) returns(ProductDetailResp);
+
+  //seckillProduct
+  rpc SeckillList (SeckillListReq) returns(SeckillListResp);
+  rpc SeckillDetail (SeckillDetailReq) returns(SeckillDetailResp);
+  rpc PreloadCache(PreloadCacheReq) returns(PreloadCacheResp);
+  rpc DeductSeckillStock(DeductSeckillStockReq) returns(DeductSeckillStockResp);
+
+  //storeProduct
+  rpc CreateProduct(CreateProductReq) returns(CreateProductResp);
+  rpc DeleteProduct(DeleteProductReq) returns(DeleteProductResp);
+}
+message Product{
+  int64 ID = 1;
+  string Name = 2;
+  double Price = 3;
+  int64 Stock = 4;
+  int64 Status = 5;
+  int64 CreateTime = 6;
+  int64 UpdateTime = 7;
+}
+
+message SmallProduct {
+  int64 ID = 1;
+  string Name = 2;
+  double Price = 3;
+  double DiscountPrice = 4;
+}
+
+message SeckillProduct {
+  int64 ID = 1;
+  string Name = 2;
+  double Price = 3;
+  int64 Stock = 4;
+  int64 Status = 5;
+  int64 CreateTime = 6;
+  int64 UpdateTime = 7;
+  double SeckillPrice = 8;
+  int64 SeckillCount = 9;
+  string StartTime = 10;
+  int64 Time = 11;
+}
+
+message RecommendReq {}
+message RecommendResp {
+  repeated SmallProduct SmallProducts = 1;
+}
+
+message SearchProductReq {
+  string Keyword = 1;
+  string Sort = 2;
+  int64 OnSale = 3;
+  int64 Page = 4;
+  int64 Size = 5;
+}
+message SearchProductResp {
+  repeated SmallProduct SmallProducts = 1;
+}
+
+message ProductDetailReq {
+  int64 ProductID = 1;
+}
+message ProductDetailResp {
+  Product Product = 1;
+}
+
+message SeckillListReq {
+  string StartTime = 1;
+  int64 Time = 2;
+}
+message SeckillListResp {
+  repeated SmallProduct SeckillProducts = 1;
+}
+
+message SeckillDetailReq {
+  int64 SeckillProductID = 1;
+}
+message SeckillDetailResp {
+  SeckillProduct SeckillProduct = 1;
+}
+
+message CreateProductReq {
+  string Name = 1;
+  double Price = 2;
+  int64 Stock = 3;
+  int64 UserID = 4;
+}
+message CreateProductResp {}
+
+message DeleteProductReq {
+  repeated int64 ProductIDs = 1;
+}
+message DeleteProductResp {}
+
+message PreloadCacheReq{}
+message PreloadCacheResp{
+  bool success = 1;
+}
+
+message DeductSeckillStockReq{
+  int64 SeckillProductID =1;
+  int64 Stock=2;
+}
+message DeductSeckillStockResp{}
