@@ -1,0 +1,43 @@
+syntax = "v1"
+
+info(
+    title: "type title here"
+    desc: "type desc here"
+    author: "type author here"
+    email: "type email here"
+    version: "type version here"
+)
+import "commonProduct/commonProduct.api"
+
+type SmallSeckill{
+    SeckillID int64 `json:"seckillId"`
+    Name string `json:"name"`
+    SeckillPrice float64 `json:"seckillPrice"`
+}
+
+type SeckillProduct {
+    Product
+    SeckillPrice float64 `json:"seckillPrice"`
+    StockCount int64 `json:"stockCount"`
+    StartTime string `json:"startTime"`
+    Time int64 `json:"time"`
+}
+
+type (
+    GetSeckillListReq{
+        StartTime string `json:"startTime"`
+        Time int64 `json:"time"`
+    }
+    GetSeckillListResp{
+        SeckillProducts []SmallSeckill `json:"seckillProducts"`
+    }
+)
+
+type (
+    GetSeckillDetailReq{
+        SeckillID int64 `json:"seckillId"`
+    }
+    GetSeckillDetailResp{
+        SeckillProduct
+    }
+)

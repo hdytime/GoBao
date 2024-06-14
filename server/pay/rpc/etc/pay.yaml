@@ -1,0 +1,23 @@
+Name: pay.rpc
+ListenOn: 0.0.0.0:2005
+
+# log配置
+Log:
+  ServiceName: pay-rpc
+  Level: error
+
+# Mysql配置
+MysqlConf:
+  DSN: root:123456@tcp(127.0.0.1:3306)/gobao_pay?charset=utf8mb4&parseTime=True&loc=Local
+
+# Redis配置
+RedisConf:
+  Addr: localhost:6379
+  DB: 1
+  PoolSize: 100
+
+# KqPaymentUpdateOrderStateConf配置
+KqPaymentUpdateOrderStateConf:
+  Brokers:
+    - localhost:9092
+  Topic: payment-update-order-state-topic

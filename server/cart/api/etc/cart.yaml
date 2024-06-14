@@ -1,0 +1,25 @@
+Name: cart
+Host: 0.0.0.0
+Port: 1003
+
+JwtAuth:
+  AccessSecret: gobaoAccessSecret
+  AccessExpire: 604800
+
+Log:
+  ServiceName: cart-api
+  Level: error
+
+UserRpcConf:
+  EndPoints:
+    - 127.0.0.1:2001
+  Nonblock: true
+
+ProductRpcConf:
+  EndPoints:
+    - 127.0.0.1:2002
+  Nonblock: true
+
+CartRpcConf:
+  EndPoints:
+    - 127.0.0.1:2003
