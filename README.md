@@ -22,17 +22,17 @@
 
 1.**缓存击穿**是指访问某个非常热的数据，缓存不存在，导致大量的请求发送到了数据库，这会导致数据库压力陡增，缓存击穿经常发生在热点数据过期失效时，如下图所示：
 
-![image-20240614173901580](C:\Users\hdytime\AppData\Roaming\Typora\typora-user-images\image-20240614173901580.png)
+![image-20240614173901580](https://github.com/hdytime/GoBao/blob/main/images/image-20240614173852395.png)
 
 通过**singleflight**来控制，singleflight的原理是当同时有很多请求同时到来时，最终只有一个请求会最终访问到资源。
 
 [Go语言之防缓存击穿利器Singleflight](https://www.lixueduan.com/posts/go/singleflight/)
 
-![image-20240614174048514](C:\Users\hdytime\AppData\Roaming\Typora\typora-user-images\image-20240614174048514.png)
+![image-20240614174048514](https://github.com/hdytime/GoBao/blob/main/images/image-20240614174048514.png)
 
 2.使用**mr包并发请求rpc**，提高系统响应
 
-![image-20240614174552585](C:\Users\hdytime\AppData\Roaming\Typora\typora-user-images\image-20240614174552585.png)
+![image-20240614174552585](https://github.com/hdytime/GoBao/blob/main/images/image-20240614174552585.png)
 
 3.**缓存雪崩**是指大量的的应用请求无法在Redis缓存中进行处理，紧接着应用将大量的请求发送到数据库，导致数据库被打挂。
 
@@ -40,13 +40,13 @@
 
 如果要给缓存数据设置过期时间，应该避免将大量的数据设置成同一个过期时间。我们可以在对缓存数据设置过期时间时，**给这些数据的过期时间加上一个随机数**，这样就保证数据不会在同一时间过期。
 
-![image-20240614224205764](C:\Users\hdytime\AppData\Roaming\Typora\typora-user-images\image-20240614224205764.png)
+![image-20240614224205764](https://github.com/hdytime/GoBao/blob/main/images/image-20240614224205764.png)
 
 4.**批量数据聚合**
 
 每来一次秒杀抢购请求都往往Kafka中发送一条消息。假如这个时候有一千万的用户同时来抢购，就算我们做了各种限流策略，一瞬间还是可能会有上百万的消息会发到Kafka，会产生大量的网络IO和磁盘IO成本，那怎么解决这个问题呢？答案是做消息的聚合。之前发送一条消息就会产生一次网络IO和一次磁盘IO，我们做消息聚合后，比如聚合100条消息后再发送给Kafka，这个时候100条消息才会产生一次网络IO和磁盘IO，对整个Kafka的吞吐和性能是一个非常大的提升。
 
-![image-20240614174908288](C:\Users\hdytime\AppData\Roaming\Typora\typora-user-images\image-20240614174908288.png)
+![image-20240614174908288](https://github.com/hdytime/GoBao/blob/main/images/image-20240614174908288.png)
 
 
 
@@ -58,7 +58,7 @@
 
 假设线程A删除缓存后，还没来得及更新数据库，这时候线程B开始读数据，线程B发现缓存缺失就只能去读数据库，等到线程B从数据库中读取完数据回塞缓存后，线程A才开始更新数据库，此时，缓存中的数据是旧值，而数据库中是最新值，两者已经不一致了。
 
-![image-20240614175213592](C:\Users\hdytime\AppData\Roaming\Typora\typora-user-images\image-20240614175213592.png)
+![image-20240614175213592](https://github.com/hdytime/GoBao/blob/main/images/image-20240614175213592.png)
 
 这种场景的解决方案是在线程A更新完数据库的值后，可以让它sleep一小段时间，再进行一次缓存删除操作，之所以要加上sleep的一段时间，就是为了让线程B能够先从数据库读取出数据然后再把缓存miss的数据回塞到缓存，然后线程A再进行删除。所以线程A的sleep时间就需要大于线程B读取数据再写入缓存的时间。这个时间是多少呢？这个是需要我们在业务中加入打点监控来统计的，根据这个统计值来估算该时间。这样一来，其他线程读取数据时，会发现缓存缺失，就会从数据库中读取最新的值。我们把这种模型叫做 "延时双删"。
 
@@ -66,21 +66,21 @@
 
 如果线程A更新了数据库中的值，但还没来得及删除缓存中的值，线程B这时候开始读取数据，此时，线程B查询缓存时，命中了缓存，就会直接使用缓存中的值，该值为旧值。不过在这种场景下，如果并发请求量不高的话，其实基本上不会有线程读到旧值，而且线程A更新完数据库后，删除缓存是非常快的操作，所以，这种情况总体对业务影响较小。本项目采用这种策略。
 
-![image-20240614175316958](C:\Users\hdytime\AppData\Roaming\Typora\typora-user-images\image-20240614175316958.png)
+![image-20240614175316958](https://github.com/hdytime/GoBao/blob/main/images/image-20240614175316958.png)
 
 ### 6.并发读写
 
 首先第一步线程A读取缓存，这时候缓存没有命中，由于使用的是cache aside这种模式，所以接下来第二步线程A会去读数据库，这个时候线程B更新数据库，更新完数据库后通过set cache更新了缓存，最后第五步线程A把从数据库读到的值通过set cache也更新了缓存，但是这时候线程A中的数据已经是脏数据了，由于第四步和第五步都是设置缓存，导致写入的值相互覆盖，并且操作的顺序具有不确定性，从而导致了缓存不一致情况的发生。
 
-![image-20240614175437360](C:\Users\hdytime\AppData\Roaming\Typora\typora-user-images\image-20240614175437360.png)
+![image-20240614175437360](https://github.com/hdytime/GoBao/blob/main/images/image-20240614175437360.png)
 
 怎么解决这个问题呢？我们需要把第五步的set cache操作替换成add cache即可，add cache即setnx操作，只有缓存不存在的时候才会成功写入，相当于加了优先级，即更新数据库后的更新缓存优先级更高，而读数据库后回塞缓存的优先级较低，从而保证写操作的最新数据不会被读操作的回塞数据覆盖。
 
-![image-20240614224433821](C:\Users\hdytime\AppData\Roaming\Typora\typora-user-images\image-20240614224433821.png)
+![image-20240614224433821](https://github.com/hdytime/GoBao/blob/main/images/image-20240614224433821.png)
 
 ## **7.流量削峰**
 
 采用消息队列异步处理秒杀订单，并在内部使用本地事务确保数据一致性。用消息队列来缓冲瞬时的流量，把同步的直接调用转换成异步的间接推送，中间通过一个队列在一端承接瞬时的流量洪峰，在另一端平滑的将消息推送出去。并结合batcher来实现高性能。
 
-![image-20240614224846140](C:\Users\hdytime\AppData\Roaming\Typora\typora-user-images\image-20240614224846140.png)
+![image-20240614224846140](https://github.com/hdytime/GoBao/blob/main/images/image-20240614224846140.png)
 
